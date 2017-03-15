@@ -1,7 +1,5 @@
 package com.raylew.ml;
 
-import com.raylew.ml.test.ID3;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -199,7 +197,7 @@ public class ID3Algorithm {
          */
         public static String[][] loadFromFile(String fileName){
             String[][] matrix=new String[SAMPLE_COUNT+1][ATTRIBUTE_COUNT+2];
-            ClassLoader classLoader = ID3.class.getClassLoader();
+            ClassLoader classLoader = ID3Algorithm.class.getClassLoader();
             int rowIndex=0;
             try(BufferedReader br = new BufferedReader(new FileReader(classLoader.getResource(fileName).getFile()))) {
                 for(String line; (line = br.readLine()) != null; ) {
