@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<tree>
+<declarations>
+<attributeDecl name="name" type="String" />
+<attributeDecl name="weight" type="Real" />
+</declarations>
+<branch>
+<attribute name="name" value="root" />
+<leaf>
+<attribute name="name" value="fts16 = 0" />
+<attribute name="weight" value="9" />
+</leaf>
+<branch>
+<attribute name="name" value="fts16 = 1" />
+<leaf>
+<attribute name="name" value="fts31 = 0" />
+<attribute name="weight" value="6" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts31 = 1" />
+<attribute name="weight" value="3" />
+</leaf>
+<branch>
+<attribute name="name" value="fts31 = 2" />
+<leaf>
+<attribute name="name" value="fts1 = 0" />
+<attribute name="weight" value="1" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts1 = 1" />
+<attribute name="weight" value="1" />
+</leaf>
+</branch>
+<branch>
+<attribute name="name" value="fts31 = 3" />
+<leaf>
+<attribute name="name" value="fts1 = 0" />
+<attribute name="weight" value="1" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts1 = 3" />
+<attribute name="weight" value="3" />
+</leaf>
+</branch>
+</branch>
+<branch>
+<attribute name="name" value="fts16 = 2" />
+<leaf>
+<attribute name="name" value="fts34 = 0" />
+<attribute name="weight" value="4" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts34 = 1" />
+<attribute name="weight" value="1" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts34 = 2" />
+<attribute name="weight" value="3" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts34 = 3" />
+<attribute name="weight" value="1" />
+</leaf>
+</branch>
+<branch>
+<attribute name="name" value="fts16 = 3" />
+<branch>
+<attribute name="name" value="fts38 = 0" />
+<leaf>
+<attribute name="name" value="fts14 = 0" />
+<attribute name="weight" value="1" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts14 = 1" />
+<attribute name="weight" value="12" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts14 = 2" />
+<attribute name="weight" value="1" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts14 = 3" />
+<attribute name="weight" value="1" />
+</leaf>
+</branch>
+<leaf>
+<attribute name="name" value="fts38 = 1" />
+<attribute name="weight" value="14" />
+</leaf>
+<branch>
+<attribute name="name" value="fts38 = 2" />
+<leaf>
+<attribute name="name" value="fts9 = 0" />
+<attribute name="weight" value="1" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts9 = 1" />
+<attribute name="weight" value="2" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts9 = 2" />
+<attribute name="weight" value="2" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts9 = 3" />
+<attribute name="weight" value="1" />
+</leaf>
+</branch>
+<branch>
+<attribute name="name" value="fts38 = 3" />
+<leaf>
+<attribute name="name" value="fts1 = 1" />
+<attribute name="weight" value="1" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts1 = 2" />
+<attribute name="weight" value="1" />
+</leaf>
+<leaf>
+<attribute name="name" value="fts1 = 3" />
+<attribute name="weight" value="1" />
+</leaf>
+</branch>
+</branch>
+</branch>
+</tree>
