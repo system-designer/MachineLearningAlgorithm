@@ -18,11 +18,14 @@ public class ID3Algorithm {
     public final static int ATTRIBUTE_COUNT=6;
     public static String[][] matrix;
     public static List<Attribute> attributes;
+    public static Tree decisionTree;
 
     public ID3Algorithm(){
         //load data from csv into matrix
         matrix=ID3Util.loadFromFile("watermelon_v2.txt");
         attributes=new ArrayList<>(ATTRIBUTE_COUNT);
+        Attribute rootData=new Attribute();
+        decisionTree=new Tree<Attribute>(rootData);
         //initialize attributes
         for(int col=1;col<=ATTRIBUTE_COUNT;col++){
             Attribute attribute=new Attribute();
@@ -46,12 +49,13 @@ public class ID3Algorithm {
             int sampleIndex=Integer.parseInt(matrix[i][0]);
             sampleIndexes.add(sampleIndex);
         }
-        ID3Util.selectAttribute(sampleIndexes);
+        ID3Util.selectAttribute(sampleIndexes,decisionTree.getRoot(),null);
     }
 
     public static void main(String[] args) {
         ID3Algorithm id3Algorithm=new ID3Algorithm();
         id3Algorithm.getDecisionTree();
+        decisionTree.traversal(decisionTree.getRoot());
     }
 
     static class ID3Util{
@@ -153,10 +157,54 @@ public class ID3Algorithm {
         }
 
         /**
+         * get leaf decision result by max attrValue in samples
+         * @param sampleIndexes samples indexes
+         * @param pAttr parent attribute value
+         * @param pAttrValue parent attribute
+         * @return
+         */
+        public static String getLeafResult(Set<Integer> sampleIndexes,Attribute pAttr,String pAttrValue){
+            String result=null;
+            Map<String,Integer> map=new HashMap<>();
+            int pAttrCol=-1;
+            for(int col=1;col<=ATTRIBUTE_COUNT;col++){
+                if(matrix[0][col].equals(pAttr.getName())){
+                    pAttrCol=col;
+                    break;
+                }
+            }
+            if(pAttrCol==-1){
+                return result;
+            }
+            Iterator<Integer> sampleIndexesIterator = sampleIndexes.iterator();
+            while(sampleIndexesIterator.hasNext()){
+                int row=sampleIndexesIterator.next();
+                if(matrix[row][pAttrCol].equals(pAttrValue)){
+                    String key=matrix[row][ATTRIBUTE_COUNT+1];
+                    if(map.containsKey(key)){
+                        map.put(key,map.get(key)+1);
+                    }else{
+                        map.put(key,1);
+                    }
+                }
+            }
+            Iterator<String> iterator = map.keySet().iterator();
+            int max=Integer.MIN_VALUE;
+            while(iterator.hasNext()){
+                String key=iterator.next();
+                if(map.get(key)>max){
+                    max=map.get(key);
+                    result=key;
+                }
+            }
+            return result;
+        }
+
+        /**
          * select the best attribute in the samples
          * @param sampleIndexes
          */
-        public static void selectAttribute(Set<Integer> sampleIndexes){
+        public static void selectAttribute(Set<Integer> sampleIndexes,Tree.Node<Attribute> node,String pAttrValue){
             if(sampleIndexes.size()==0){
                 return;
             }else {
@@ -170,6 +218,9 @@ public class ID3Algorithm {
                     }
                 }
                 if(attribute!=null){
+                    //add node to tree
+                    Tree.Node<Attribute> curNode = node.addChild(attribute,pAttrValue);
+
                     Set<String> values = attribute.getValues();
                     Iterator<String> iterator = values.iterator();
                     while(iterator.hasNext()){
@@ -183,8 +234,22 @@ public class ID3Algorithm {
                                 subSamples.add(sampleIndex);
                             }
                         }
-                        selectAttribute(subSamples);
+                        if(subSamples.size()==0){
+                            //leaf node
+                            String leafResult=getLeafResult(sampleIndexes,node.getData(),pAttrValue);
+                            Attribute attribute1=new Attribute();
+                            attribute1.setName(leafResult);
+                            node.addLeafChild(attribute1,pAttrValue,leafResult);
+                        }else{
+                            selectAttribute(subSamples,curNode,value);
+                        }
                     }
+                }else{
+                    //leaf node
+                    String leafResult=getLeafResult(sampleIndexes,node.getData(),pAttrValue);
+                    Attribute attribute1=new Attribute();
+                    attribute1.setName(leafResult);
+                    node.addLeafChild(attribute1,pAttrValue,leafResult);
                 }
             }
             return;
@@ -255,6 +320,14 @@ class Attribute{
 class Tree<T> {
     private Node<T> root;
 
+    public Node<T> getRoot() {
+        return root;
+    }
+
+    public void setRoot(Node<T> root) {
+        this.root = root;
+    }
+
     public Tree(T rootData) {
         root = new Node<T>();
         root.data = rootData;
@@ -263,8 +336,9 @@ class Tree<T> {
 
     public static class Node<T> {
         private T data;
-        private String attrName;
-        private String attrValue;
+        private String pAttrName;
+        private String pAttrValue;
+        private String leafResult;
         private Node<T> parent;
         private List<Node<T>> children;
 
@@ -272,6 +346,14 @@ class Tree<T> {
         }
 
         public Node(T node){
+            this.data=node;
+            children=new ArrayList<>();
+        }
+
+        public Node(T node,String pAttrValue){
+            this.data=node;
+            this.pAttrValue=pAttrValue;
+            children=new ArrayList<>();
         }
 
         public T getData() {
@@ -282,20 +364,28 @@ class Tree<T> {
             this.data = data;
         }
 
-        public String getAttrName() {
-            return attrName;
+        public String getpAttrName() {
+            return pAttrName;
         }
 
-        public void setAttrName(String attrName) {
-            this.attrName = attrName;
+        public void setpAttrName(String pAttrName) {
+            this.pAttrName = pAttrName;
         }
 
-        public String getAttrValue() {
-            return attrValue;
+        public String getpAttrValue() {
+            return pAttrValue;
         }
 
-        public void setAttrValue(String attrValue) {
-            this.attrValue = attrValue;
+        public void setpAttrValue(String pAttrValue) {
+            this.pAttrValue = pAttrValue;
+        }
+
+        public String getLeafResult() {
+            return leafResult;
+        }
+
+        public void setLeafResult(String leafResult) {
+            this.leafResult = leafResult;
         }
 
         public Node<T> getParent() {
@@ -320,5 +410,42 @@ class Tree<T> {
             this.children.add(childNode);
             return childNode;
         }
+
+        public Node<T> addChild(T child,String pAttrValue) {
+            Node<T> childNode = new Node<T>(child);
+            childNode.parent = this;
+            childNode.pAttrValue=pAttrValue;
+            this.children.add(childNode);
+            return childNode;
+        }
+
+        public Node<T> addLeafChild(T child,String pAttrValue,String leafResult) {
+            Node<T> childNode = new Node<T>(child);
+            childNode.parent = this;
+            childNode.pAttrValue=pAttrValue;
+            childNode.leafResult=leafResult;
+            this.children.add(childNode);
+            return childNode;
+        }
     }
+
+    /**
+     * traversal tree and output node
+     * @param node
+     */
+    public void traversal(Node<Attribute> node){
+        if(node.getData().getName()!=null){
+            System.out.println(node.getData().getName());
+        }
+        if(node.children==null||node.children.size()==0){
+            return;
+        }else{
+            List children = node.children;
+            Iterator iterator = children.iterator();
+            while(iterator.hasNext()){
+                traversal((Node)iterator.next());
+            }
+        }
+    }
+
 }
