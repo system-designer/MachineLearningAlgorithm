@@ -201,6 +201,47 @@ public class ID3Algorithm {
         }
 
         /**
+         * get leaf decision result by max attrValue in samples
+         * @param sampleIndexes samples indexes
+         * @param pAttr parent attribute value
+         * @return
+         */
+        public static String getLeafResult(Set<Integer> sampleIndexes,Attribute pAttr){
+            String result=null;
+            Map<String,Integer> map=new HashMap<>();
+            int pAttrCol=-1;
+            for(int col=1;col<=ATTRIBUTE_COUNT;col++){
+                if(matrix[0][col].equals(pAttr.getName())){
+                    pAttrCol=col;
+                    break;
+                }
+            }
+            if(pAttrCol==-1){
+                return result;
+            }
+            Iterator<Integer> sampleIndexesIterator = sampleIndexes.iterator();
+            while(sampleIndexesIterator.hasNext()){
+                int row=sampleIndexesIterator.next();
+                String key=matrix[row][ATTRIBUTE_COUNT+1];
+                if(map.containsKey(key)){
+                    map.put(key,map.get(key)+1);
+                }else{
+                    map.put(key,1);
+                }
+            }
+            Iterator<String> iterator = map.keySet().iterator();
+            int max=Integer.MIN_VALUE;
+            while(iterator.hasNext()){
+                String key=iterator.next();
+                if(map.get(key)>max){
+                    max=map.get(key);
+                    result=key;
+                }
+            }
+            return result;
+        }
+
+        /**
          * select the best attribute in the samples
          * @param sampleIndexes
          */
@@ -235,11 +276,11 @@ public class ID3Algorithm {
                             }
                         }
                         if(subSamples.size()==0){
-                            //leaf node
-                            String leafResult=getLeafResult(sampleIndexes,node.getData(),pAttrValue);
+                            //leaf node 色泽-浅白-好瓜
+                            String leafResult=getLeafResult(sampleIndexes,curNode.getData());
                             Attribute attribute1=new Attribute();
                             attribute1.setName(leafResult);
-                            node.addLeafChild(attribute1,pAttrValue,leafResult);
+                            curNode.addLeafChild(attribute1,value,leafResult);
                         }else{
                             selectAttribute(subSamples,curNode,value);
                         }
