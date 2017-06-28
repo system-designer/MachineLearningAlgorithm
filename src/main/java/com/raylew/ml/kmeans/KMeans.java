@@ -5,14 +5,6 @@ import java.util.List;
 /**
  * Created by Raymond on 2017/5/8.
  */
-/* 
- * KMeans.java ; Cluster.java ; Point.java
- *
- * Solution implemented by DataOnFocus
- * www.dataonfocus.com
- * 2015
- *
-*/
 public class KMeans {
 
     //Number of Clusters. This metric should be related to the number of points
