@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+import static com.raylew.ml.id3.ID3Algorithm.stringBuilder;
+
 /**
  * Created by Raymond on 2017/3/14.
  * 1.calculate total entropy of the set
@@ -19,8 +21,10 @@ public class ID3Algorithm {
     public static String[][] matrix;
     public static List<Attribute> attributes;
     public static Tree decisionTree;
+    public static StringBuilder stringBuilder;
 
     public ID3Algorithm(){
+        stringBuilder=new StringBuilder();
         //load data from csv into matrix
         matrix=ID3Util.loadFromFile("watermelon_v2.txt");
         attributes=new ArrayList<>(ATTRIBUTE_COUNT);
@@ -55,7 +59,10 @@ public class ID3Algorithm {
     public static void main(String[] args) {
         ID3Algorithm id3Algorithm=new ID3Algorithm();
         id3Algorithm.getDecisionTree();
-        decisionTree.traversal(decisionTree.getRoot());
+        //decisionTree.traversal(decisionTree.getRoot());
+        decisionTree.traversalJson((Tree.Node)decisionTree.getRoot().getChildren().get(0));
+        String json=stringBuilder.toString();
+        System.out.println(json);
     }
 
     static class ID3Util{
@@ -486,6 +493,46 @@ class Tree<T> {
             while(iterator.hasNext()){
                 traversal((Node)iterator.next());
             }
+        }
+    }
+
+    /**
+     * traversal tree and output node
+     * @param node
+     */
+    public void traversalJson(Node<Attribute> node){
+        System.out.println(node.getData().getName());
+        if(node.children==null||node.children.size()==0){
+            String leafResult=node.getLeafResult();
+            stringBuilder.append("{");
+            stringBuilder.append("\"error\"").append(":").append(0).append(",");
+            stringBuilder.append("\"samples\"").append(":").append(0).append(",");
+            int result=leafResult.equals("好瓜")?1:0;
+            stringBuilder.append("\"value\"").append(":").append("["+result+"]").append(",");
+            stringBuilder.append("\"label\"").append(":").append("\"" + result + "\"").append(",");
+            stringBuilder.append("\"type\"").append(":").append("\"leaf\"");
+            stringBuilder.append("}");
+            return;
+        }else{
+            stringBuilder.append("{");
+            stringBuilder.append("\"error\"").append(":").append(0).append(",");
+            stringBuilder.append("\"samples\"").append(":").append(0).append(",");
+            stringBuilder.append("\"value\"").append(":").append("[]").append(",");
+            stringBuilder.append("\"label\"").append(":").append("\"" + node.getData().getName()
+                    +"("+node.getpAttrValue()+")"+ "\"").append(",");
+            stringBuilder.append("\"feature\"").append(":").append("\"\"").append(",");
+            stringBuilder.append("\"type\"").append(":").append("\"split\"").append(",");
+            stringBuilder.append("\"children\"").append(":").append("[");
+            List children = node.children;
+            for(int i=0;i<children.size();i++){
+                Node childNode=(Node)children.get(i);
+                traversalJson(childNode);
+                if(i<children.size()-1){
+                    stringBuilder.append(",");
+                }
+            }
+            stringBuilder.append("]");
+            stringBuilder.append("}");
         }
     }
 
